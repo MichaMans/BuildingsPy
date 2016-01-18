@@ -187,7 +187,7 @@ class Simulator(object):
            >>> s.getParameters()
            [('valve.m_flow_nominal', 0.1), ('PID.k', 1.0)]
         '''
-        return self._parameters_.items()
+        return list(self._parameters_.items())
 
     def getOutputDirectory(self):
         '''Returns the name of the output directory.
@@ -360,7 +360,7 @@ OutputCPUtime:=true;
         else:
             # Create string for numberOfIntervals
             intervals=""
-            if self._simulator_.has_key('numberOfIntervals'):
+            if 'numberOfIntervals' in self._simulator_:
                 intervals=", numberOfIntervals={0}".format(
                     self._simulator_.get('numberOfIntervals'))
             s += """
@@ -576,7 +576,7 @@ simulateModel(modelInstance, startTime={start_time}, stopTime={stop_time}, metho
                           ', tolerance=' + str(self._simulator_.get('eps')) + \
                           ', resultFile="' + str(self._simulator_.get('resultFile')
                                                  + '"'))
-            if self._simulator_.has_key('numberOfIntervals'):
+            if 'numberOfIntervals' in self._simulator_:
                 fil.write(', numberOfIntervals=' +
                           str(self._simulator_.get('numberOfIntervals')))
             fil.write(');\n')
@@ -769,8 +769,8 @@ end if;
 
         # Check if executable is on the path
         if not self._isExecutable(cmd[0]):
-            print "Error: Did not find executable '", cmd[0], "'."
-            print "       Make sure it is on the PATH variable of your operating system."
+            print("Error: Did not find executable '", cmd[0], "'.")
+            print("       Make sure it is on the PATH variable of your operating system.")
             exit(3)
         # Run command
         try:
@@ -827,7 +827,7 @@ end if;
                              str(timeout) + " seconds.")
 
         except OSError as e:
-            print "Execution of ", cmd, " failed:", e
+            print("Execution of ", cmd, " failed:", e)
 
     def showProgressBar(self, show=True):
         ''' Enables or disables the progress bar.
@@ -855,7 +855,7 @@ end if;
             else:
                 proBar += " "
         proBar += "|"
-        print proBar, int(fractionComplete*100), "%\r",
+        print(proBar, int(fractionComplete*100), "%\r", end=' ')
         sys.stdout.flush()
 
     def _declare_parameters(self):
@@ -878,7 +878,7 @@ end if;
                 return repr(arg)
         dec = list()
 
-        for k, v in self._parameters_.items():
+        for k, v in list(self._parameters_.items()):
             # Dymola requires vectors of parameters to be set in the format
             # p = {1, 2, 3} rather than in the format of python arrays, which
             # is p = [1, 2, 3].
@@ -923,7 +923,7 @@ end if;
         actual_res = Reader(os.path.join(self._outputDir_,
                               self._simulator_['resultFile'])+'.mat',
                               'dymola')
-        for key, value in self._parameters_.iteritems():
+        for key, value in self._parameters_.items():
             if isinstance(value, list): # lists
                 for index, val in enumerate(value):
                     key_string = key + '['+ str(index+1) + ']'
