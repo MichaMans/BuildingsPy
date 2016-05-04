@@ -360,6 +360,7 @@ OutputCPUtime:=true;
 cd("{working_directory}");
 Modelica.Utilities.Files.remove("{log_file}");
 openModel("package.mo");
+experimentSetupOutput(events=false, equidistant=true);
 OutputCPUtime:=true;
 """.format(working_directory=working_directory,
            log_file=log_file)
@@ -598,6 +599,8 @@ simulateModel(modelInstance, startTime={start_time}, stopTime={stop_time}, metho
             fil.write("// Do not edit.\n")
             fil.write('cd("' + worDir + '");\n')
             fil.write("Modelica.Utilities.Files.remove(\"simulator.log\");\n")
+            fil.write(
+                "experimentSetupOutput(events=false, equidistant=true);\n")
             #fil.write("openModel(\"package.mo\");\n")
             fil.write('OutputCPUtime:=true;\n')
             # Pre-processing commands
