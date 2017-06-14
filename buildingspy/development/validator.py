@@ -95,42 +95,84 @@ Modelica package. Expected file '%s'."
                  section.
         '''
         # Open file.
-        with open(moFile, mode="r", encoding="utf-8-sig") as f:
-            lines = f.readlines()
+        try:
+            with open(moFile, mode="r", encoding="utf-8-sig") as f:
+                lines = f.readlines()
 
-        nLin = len(lines)
-        isTagClosed = True
-        entries = list()
+            nLin = len(lines)
+            isTagClosed = True
+            entries = list()
 
-        for i in range(nLin):
-            if isTagClosed:
-                # search for opening tag
-                idxO = lines[i].find("<html>")
-                if idxO > -1:
-                    # search for closing tag on same line as opening tag
-                    idxC = lines[i].find("</html>")
-                    if idxC > -1:
-                        entries.append(lines[i][idxO + 6:idxC])
-                        isTagClosed = True
-                    else:
-                        entries.append(lines[i][idxO + 6:])
-                        isTagClosed = False
-            else:
-                # search for closing tag
-                idxC = lines[i].find("</html>")
-                if idxC == -1:
-                    # closing tag not found, copy full line
-                    entries.append(lines[i])
-                else:
-                    # found closing tag, copy beginning of line only
-                    entries.append(lines[i][0:idxC])
-                    isTagClosed = True
-                    entries.append("<h4>Revisions</h4>\n")
-                    # search for opening tag on same line as closing tag
+            for i in range(nLin):
+                if isTagClosed:
+                    # search for opening tag
                     idxO = lines[i].find("<html>")
                     if idxO > -1:
-                        entries.append(lines[i][idxO + 6:])
-                        isTagClosed = False
+                        # search for closing tag on same line as opening tag
+                        idxC = lines[i].find("</html>")
+                        if idxC > -1:
+                            entries.append(lines[i][idxO + 6:idxC])
+                            isTagClosed = True
+                        else:
+                            entries.append(lines[i][idxO + 6:])
+                            isTagClosed = False
+                else:
+                    # search for closing tag
+                    idxC = lines[i].find("</html>")
+                    if idxC == -1:
+                        # closing tag not found, copy full line
+                        entries.append(lines[i])
+                    else:
+                        # found closing tag, copy beginning of line only
+                        entries.append(lines[i][0:idxC])
+                        isTagClosed = True
+                        entries.append("<h4>Revisions</h4>\n")
+                        # search for opening tag on same line as closing tag
+                        idxO = lines[i].find("<html>")
+                        if idxO > -1:
+                            entries.append(lines[i][idxO + 6:])
+                            isTagClosed = False
+        except UnicodeDecodeError:
+            pass
+        try:
+            with open(moFile, mode="r", encoding="ISO-8859-1") as f:
+                lines = f.readlines()
+
+            nLin = len(lines)
+            isTagClosed = True
+            entries = list()
+
+            for i in range(nLin):
+                if isTagClosed:
+                    # search for opening tag
+                    idxO = lines[i].find("<html>")
+                    if idxO > -1:
+                        # search for closing tag on same line as opening tag
+                        idxC = lines[i].find("</html>")
+                        if idxC > -1:
+                            entries.append(lines[i][idxO + 6:idxC])
+                            isTagClosed = True
+                        else:
+                            entries.append(lines[i][idxO + 6:])
+                            isTagClosed = False
+                else:
+                    # search for closing tag
+                    idxC = lines[i].find("</html>")
+                    if idxC == -1:
+                        # closing tag not found, copy full line
+                        entries.append(lines[i])
+                    else:
+                        # found closing tag, copy beginning of line only
+                        entries.append(lines[i][0:idxC])
+                        isTagClosed = True
+                        entries.append("<h4>Revisions</h4>\n")
+                        # search for opening tag on same line as closing tag
+                        idxO = lines[i].find("<html>")
+                        if idxO > -1:
+                            entries.append(lines[i][idxO + 6:])
+                            isTagClosed = False
+        except UnicodeDecodeError:
+            pass
         return entries
 
     def _validateHTML(self, moFile):
